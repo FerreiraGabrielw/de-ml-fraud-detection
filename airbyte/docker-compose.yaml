@@ -1,0 +1,54 @@
+services:
+
+  airbyte-db:
+    image: postgres:13-alpine
+
+    container_name: airbyte-db
+
+    environment:
+      POSTGRES_USER: airbyte
+      POSTGRES_PASSWORD: airbyte
+      POSTGRES_DB: airbyte
+
+    volumes:
+      - airbyte_db:/var/lib/postgresql/data
+
+    networks:
+      - airbyte_network
+
+  airbyte-webapp:
+    image: airbyte/webapp:0.44.20
+
+    container_name: airbyte-webapp
+
+    ports:
+      - "8000:80"
+
+    depends_on:
+      - airbyte-server
+
+    networks:
+      - airbyte_network
+
+  airbyte-server:
+    image: airbyte/server:0.44.20
+
+    container_name: airbyte-server
+
+    environment:
+      CONFIG_DATABASE_USER: airbyte
+      CONFIG_DATABASE_PASSWORD: airbyte
+      CONFIG_DATABASE_URL: jdbc:postgresql://airbyte-db:5432/airbyte
+
+    depends_on:
+      - airbyte-db
+
+    networks:
+      - airbyte_network
+
+networks:
+  airbyte_network:
+    driver: bridge
+
+volumes:
+  airbyte_db:

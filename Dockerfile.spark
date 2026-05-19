@@ -1,0 +1,7 @@
+FROM jupyter/pyspark-notebook:latest
+
+RUN pip install --no-cache-dir \
+    python-dotenv \
+    boto3 \
+    psycopg2-binary \
+    sqlalchemy
